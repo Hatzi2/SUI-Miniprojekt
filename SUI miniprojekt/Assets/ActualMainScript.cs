@@ -18,57 +18,64 @@ public class ActualMainScript : MonoBehaviour
 
     public float minimalDistance;
     private float time = 0;
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    public float fixedDistance = 10.0f; // Set this to the desired fixed distance
 
     // Update is called once per frame
     void Update()
     {
+        // Find the wrists
         leftWrist = GameObject.Find("L_Wrist");
         rightWrist = GameObject.Find("R_Wrist");
+
+        // Get positions
         leftPosition = leftWrist.transform.position;
         rightPosition = rightWrist.transform.position;
         Vector3 cameraPosition = camera.transform.position;
         Vector3 mainCameraPosition = mainCamera.transform.position;
 
+        // Calculate distance
         float distance = Vector3.Distance(leftPosition, rightPosition);
 
+        // If both hands are active
         if (Lefthand.activeSelf && RightHand.activeSelf)
         {
-            
-            camera.transform.parent = null;
-
             time += Time.deltaTime;
-            viewPlane.transform.localScale = new Vector3(distance, distance, distance);
-            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y, distance * 5);
 
+            camera.transform.localPosition = new Vector3(0, 0, distance * 10);
+
+            // Activate view plane
             viewPlane.SetActive(true);
-            
 
+            // Map the quad corners to the hand positions
+            Vector3 bottomLeft = new Vector3(leftPosition.x - 1, leftPosition.y, leftPosition.z + 1);
+            Vector3 topRight = new Vector3(rightPosition.x + 1, rightPosition.y, rightPosition.z + 1);
+            Vector3 center = (bottomLeft + topRight) / 2;
 
+            // Position the quad at a fixed distance from the mainCamera
+            Vector3 directionFromCamera = (center - mainCamera.transform.position).normalized;
+            viewPlane.transform.position = mainCamera.transform.position + directionFromCamera * fixedDistance;
+
+            // Scale the quad by the distance of the wrists
+            viewPlane.transform.localScale = new Vector3(distance, distance, distance);
+
+            // Make the quad always face the mainCamera
+            viewPlane.transform.LookAt(camera.transform.position);
         }
         else
         {
-            camera.transform.position = mainCameraPosition;
+            // Deactivate view plane
             viewPlane.SetActive(false);
+
+            // If time is greater than 0.3
             if (time > 0.3)
             {
-
-
-                mainCamera.transform.position = cameraPosition;
+                // Teleport the main camera to the position of the other camera
+                mainCamera.transform.position = camera.transform.position;
                 time = 0;
-
-                
-                camera.transform.parent = child.transform.parent;
-
             }
-            mainCameraPosition = mainCamera.transform.position;
+
+            // Reset the camera's position
+            camera.transform.position = mainCameraPosition;
         }
     }
-
-}   
+}
