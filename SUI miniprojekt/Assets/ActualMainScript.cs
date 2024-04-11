@@ -9,21 +9,20 @@ public class ActualMainScript : MonoBehaviour
     public GameObject viewPlane;
     public GameObject camera;
     public GameObject mainCamera;
+    public GameObject child;
 
     private GameObject leftWrist;
     private GameObject rightWrist;
     private Vector3 rightPosition;
     private Vector3 leftPosition;
 
-    private Vector3 mainCameraPosition;
-
     public float minimalDistance;
+    private float time = 0;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
 
     }
 
@@ -37,24 +36,39 @@ public class ActualMainScript : MonoBehaviour
         Vector3 cameraPosition = camera.transform.position;
         Vector3 mainCameraPosition = mainCamera.transform.position;
 
-
         float distance = Vector3.Distance(leftPosition, rightPosition);
-        float time
 
-        if (Lefthand.activeSelf && RightHand.activeSelf) {
+        if (Lefthand.activeSelf && RightHand.activeSelf)
+        {
+            
+            camera.transform.parent = null;
 
-            viewPlane.transform.localScale = new Vector3 (distance, distance, distance);
-            camera.transform.localPosition = new Vector3(0, 0, distance*5);
+            time += Time.deltaTime;
+            viewPlane.transform.localScale = new Vector3(distance, distance, distance);
+            camera.transform.localPosition = new Vector3(camera.transform.localPosition.x, camera.transform.localPosition.y, distance * 5);
+
             viewPlane.SetActive(true);
             
 
-            Debug.Log(distance);
+
         }
         else
         {
+            camera.transform.position = mainCameraPosition;
             viewPlane.SetActive(false);
-            mainCamera.transform.position = cameraPosition;
+            if (time > 0.3)
+            {
+
+
+                mainCamera.transform.position = cameraPosition;
+                time = 0;
+
+                
+                camera.transform.parent = child.transform.parent;
+
+            }
+            mainCameraPosition = mainCamera.transform.position;
         }
     }
 
-}
+}   
