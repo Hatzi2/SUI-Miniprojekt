@@ -41,7 +41,7 @@ public class ActualMainScript : MonoBehaviour
         {
             time += Time.deltaTime;
 
-            camera.transform.localPosition = new Vector3(0, 0, distance * 10);
+            camera.transform.localPosition = new Vector3(0, 0, distance * 15);
 
             // Activate view plane
             viewPlane.SetActive(true);

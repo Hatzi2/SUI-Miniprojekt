@@ -21,10 +21,13 @@ public class FinalMainScript : MonoBehaviour
     private Vector3 rightPosition;
     private Vector3 leftPosition;
     private float time = 0;
+    private float time2 = 0;
     private Vector3 moveDirection; // Declare moveDirection as a member variable
     private Vector3 planeLocation;
     private float moveSpeed = 0.1f;
     private Vector3 initialPosition;
+    private int fallen = 0;
+    private bool timerstart = false;
 
     void start()
     {
@@ -54,9 +57,28 @@ public class FinalMainScript : MonoBehaviour
         planeLocation = moveDirection*5;
         planeLocation = new Vector3(planeLocation.x+ 0.1f, planeLocation.y+0.2f, planeLocation.z);
 
+        if (XROriginPosition.z > 9 && XROriginPosition.z < 15)
+        {
+            timerstart = true;
+        }
+
+        if (timerstart)
+        {
+            time2 += Time.deltaTime;
+        }
+
+        if (XROriginPosition.z > 60)
+        {
+            Debug.Log(time2);
+            Debug.Log(fallen);
+            timerstart = false;
+            
+        }
+
         if (XROriginPosition.y < (-5.0f))
         {
-            Debug.Log("Fallen");
+            fallen += 1;
+            
             if (XROriginPosition.z < 30)
             {
                 XROrigin.transform.position = initialPosition;
@@ -79,8 +101,6 @@ public class FinalMainScript : MonoBehaviour
 
         if (Physics.Raycast(cameraPosition, downDirection, out hit, maxDistance))
         {
-            // If the ray hits an object, print "Hit"
-            Debug.Log("Hit");
 
             // Change the color of the material named "mat" to a greenish tint
             mat.color = new Color(0.8f, 1.0f, 0.8f); // Adjust the values as needed for your greenish tint
@@ -110,7 +130,7 @@ public class FinalMainScript : MonoBehaviour
             Vector3 localMoveDirection = camera.transform.InverseTransformDirection(moveDirection);
 
             // Set the local position of the camera along its local z-axis
-            camera.transform.localPosition = new Vector3(0, 0, localMoveDirection.z * distance * 30);
+            camera.transform.localPosition = new Vector3(0, 0, localMoveDirection.z * distance * 35);
 
 
 
